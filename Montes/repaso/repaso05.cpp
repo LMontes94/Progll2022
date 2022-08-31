@@ -40,8 +40,9 @@ void reservaHabitacion(ST_HABITACIONES hotel[CANT_PISOS][CANT_HABITACIONES_X_PIS
 void hacerReserva(char reserva, ST_RESERVA reservas[CANT_PISOS * CANT_HABITACIONES_X_PISO], ST_HABITACIONES hotel[CANT_PISOS][CANT_HABITACIONES_X_PISO]);
 void cargarReserva(ST_RESERVA reserva[CANT_PISOS * CANT_HABITACIONES_X_PISO], ST_RESERVA persona);
 void checkIn(ST_RESERVA reserva[CANT_PISOS * CANT_HABITACIONES_X_PISO]);
+void checkOut(ST_RESERVA reserva[CANT_PISOS * CANT_HABITACIONES_X_PISO]);
 void menu(int &opcion);
-
+void imprimirReservas(ST_RESERVA reserva[CANT_PISOS * CANT_HABITACIONES_X_PISO]);
 int main()
 {
 
@@ -65,10 +66,11 @@ int main()
             checkIn(reservacion);
             break;
         case 3:
-            
+            checkOut(reservacion);
             break;
         case 4:
-        break;
+            imprimirReservas(reservacion);
+            break;
         default:
             cout << "Opcion incorrecta...." << endl;
             break;
@@ -177,7 +179,6 @@ void hacerReserva(char reserva, ST_RESERVA reservas[CANT_PISOS * CANT_HABITACION
         cout << "Nos vimos...!!";
     }
 }
-
 void cargarReserva(ST_RESERVA reserva[CANT_PISOS * CANT_HABITACIONES_X_PISO], ST_RESERVA persona)
 {
     reserva[persona.idReserva - 1] = persona;
@@ -205,7 +206,37 @@ void checkIn(ST_RESERVA reserva[CANT_PISOS * CANT_HABITACIONES_X_PISO])
 
     return;
 }
+void checkOut(ST_RESERVA reserva[CANT_PISOS * CANT_HABITACIONES_X_PISO])
+{
+    int nroReserva;
+    cout << "Ingrese su Nro de Reserva para hacer el checkOut: " << endl;
+    cin >> nroReserva;
+    while (nroReserva > MAX_CANT_RESERVAS)
+    {
+        cout << "Ingreso mal su numero de reserva.... " << endl;
+        cout << "-------------------------------------" << endl;
+        cout << "Ingrese su Nro de Reserva para hacer el checkOut: " << endl;
+        cin >> nroReserva;
+        cout << "-------------------------------------" << endl;
+    }
 
-void Checkout(){
+    cout << "Check OUT" << endl;
+    cout << "Id Reserva: " << reserva[nroReserva - 1].idReserva;
+    cout << "Nombre: " << reserva[nroReserva - 1].nombre << endl;
+    cout << "Cantidad de dias que se quedara en el hotel: " << reserva[nroReserva - 1].cantDias;
 
+    return;
+}
+void imprimirReservas(ST_RESERVA reserva[CANT_PISOS * CANT_HABITACIONES_X_PISO])
+{
+
+    for (int i = 0; i < MAX_CANT_RESERVAS; i++)
+    {
+        cout << "----------------------------------" << endl;
+        cout << "Id Reserva: " << reserva[i].idReserva << endl;
+        cout << "Nombre: " << reserva[i].nombre << endl;
+        cout << "Cantidad de dias que se quedara en el hotel: " << reserva[i].cantDias << endl;
+    }
+
+    return;
 }

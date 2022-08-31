@@ -1,0 +1,6 @@
+#include "cuadrado.h"
+#include "circulo.h"
+#include "triangulo.h"
+#include "pentagono.h"
+#include "esfera.h"
+#include "cilindro.h"
