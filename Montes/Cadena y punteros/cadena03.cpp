@@ -94,7 +94,7 @@ bool esIp(char *ip)
             if (sonTodosNros(auxIp))
             {
                 numIp = atoi(auxIp);
-                if (numIp < 0 && numIp > 255)
+                if (numIp < 0 || numIp > 255)
                 {
                     return false;
                 }
