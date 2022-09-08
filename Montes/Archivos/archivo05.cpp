@@ -40,7 +40,7 @@ int main()
     while (strcmp(persona.nombre,"fin") != 0 &&
     fscanf(archivo, "%s %d\n",persona.nombre,persona.fecha ) != EOF)
     {
-       if (persona.fecha > mayorPersona.fecha)
+       if (persona.fecha < mayorPersona.fecha || mayorPersona.fecha == 00000101)
        {
          strcpy(mayorPersona.nombre,persona.nombre);
          mayorPersona.fecha = persona.fecha;
