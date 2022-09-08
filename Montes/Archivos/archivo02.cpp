@@ -32,7 +32,7 @@ int main()
     int nota2;
 
     FILE *archivo = abrir("CURSOS.TXT", "w");
-    FILE *aprobados = abrir("APROB.TEXT","w");
+    FILE *aprobados = abrir("APROB.TXT","w");
     float promedio;
     printf("Legajo:");
     scanf("%d", &legajo);
