@@ -15,49 +15,65 @@ struct Inscripcion
 };
 
 FILE *abrir(const char *path, const char *mode);
-FILE *burbujeoMejorado();
-void leerArchivo(FILE, const char *path, const char *mode);
 int main()
 {
-    FILE *archivo = abrir("DIASFINALES.DAT", "rb");
-    FILE *archivoOrdenadoXLegajo = abrir("Ordenado_X_Legajo.dat","wb");
+    FILE *archivo = abrir("DIASFINALES.DAT", "rb+");
+    FILE *archivoOrdenadoXLegajo = abrir("Ordenado_X_Legajo.dat", "wb");
     Inscripcion inscripcion;
-    Inscripcion inscripcionAux;
-   /* printf("Lectura del archivo antes de ordenar\n");
-    leerArchivo(archivo, "DIASFINALES.TXT", "r");
-    printf("------------------------------------------------");*/
 
-    int i;
+    long actualPos = ftell(archivo);
+    fseek(archivo, 0, SEEK_END);
+    long ultimo = ftell(archivo);
+    fseek(archivo, actualPos, SEEK_SET);
+    int cantRegistros = (int)(ultimo / sizeof(Inscripcion));
+    Inscripcion inscriptosOrdenados[cantRegistros];
+    int i = 0;
+    fread(&inscripcion, sizeof(Inscripcion), 1, archivo);
+    while (!feof(archivo))
+    {
+        inscriptosOrdenados[i].legajo = inscripcion.legajo;
+        strcpy(inscriptosOrdenados[i].nombre, inscripcion.nombre);
+        strcpy(inscriptosOrdenados[i].apellido, inscripcion.apellido);
+        inscriptosOrdenados[i].codMateria = inscripcion.codMateria;
+        inscriptosOrdenados[i].anio = inscripcion.anio;
+        inscriptosOrdenados[i].mes = inscripcion.mes;
+        inscriptosOrdenados[i].dia = inscripcion.dia;
+        i++;
+        fread(&inscripcion, sizeof(Inscripcion), 1, archivo);
+    }
+    Inscripcion aux;
+    int j;
     i = 0;
     bool ordenado = false;
-    fread(&inscripcion, sizeof(Inscripcion), 1, archivo);
-    while (!feof(archivo) && !ordenado)
+    while (i < cantRegistros && !ordenado)
     {
         ordenado = true;
-        fread(&inscripcionAux, sizeof(Inscripcion), 1, archivo);
-        if (inscripcion.legajo > inscripcionAux.legajo)
+        for (j = 0; j < cantRegistros - j - 1; j++)
         {
-            fseek(archivo, (i) * sizeof(Inscripcion), SEEK_SET);
-            fwrite(&inscripcionAux,sizeof(Inscripcion),1,archivo);
-            fwrite(&inscripcion,sizeof(Inscripcion),1,archivo);
-            ordenado = false;
-        }
-       i++; 
-       fread(&inscripcion, sizeof(Inscripcion), 1, archivo);
-       printf("%d %s %s",inscripcion.legajo,inscripcion.nombre,inscripcion.apellido);
-    }
-    
-    fclose(archivo);
-    fclose(archivoOrdenadoXLegajo);
 
-    archivoOrdenadoXLegajo = abrir("Ordenado_X_Legajo.dat","wb");
+            if (inscriptosOrdenados[j].legajo > inscriptosOrdenados[j + 1].legajo)
+            {
+                aux = inscriptosOrdenados[j];
+                inscriptosOrdenados[j] = inscriptosOrdenados[j + 1];
+                inscriptosOrdenados[j + 1] = aux;
+                ordenado = false;
+            }
+        }
+        i++;
+    }
+
+    for (int k = 0; k < cantRegistros; k++)
+    {
+        fwrite(&inscriptosOrdenados[k], sizeof(Inscripcion), 1, archivoOrdenadoXLegajo);
+    }
+    fseek(archivo, 0, SEEK_SET);
     fread(&inscripcion, sizeof(Inscripcion), 1, archivoOrdenadoXLegajo);
     while (!feof(archivo))
     {
-        printf("%d %s %s\n",inscripcion.legajo,inscripcion.nombre,inscripcion.apellido);
+        printf("%d %s %s\n", inscripcion.legajo, inscripcion.nombre, inscripcion.apellido);
         fread(&inscripcion, sizeof(Inscripcion), 1, archivoOrdenadoXLegajo);
     }
-
+    fclose(archivo);
     fclose(archivoOrdenadoXLegajo);
     system("pause");
     return 0;

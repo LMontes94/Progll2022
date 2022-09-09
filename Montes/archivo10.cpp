@@ -7,7 +7,8 @@ legajos
 */
 #include <iostream>
 #include "string.h"
-
+#define LEGAJO_INICIAL 80001
+#define LEGAJO_FINAL 110000
 using namespace std;
 
 struct Inscripcion
@@ -18,38 +19,44 @@ struct Inscripcion
     int mes;
     int anio;
     char nombre[26];
+    char apellido[26];
+};
+
+struct Registro
+{
+    int legajo;
+    char nombre[26];
+    char apellido[26];
 };
 
 FILE *abrir(const char *path, const char *mode);
-FILE *burbujeoMejorado();
+void cargarArchivo(FILE *archivo, int maxRegistros, const char *path, const char *mode);
+void imprimirArchivoBin(const char *path, const char *mode);
 int main()
 {
-    FILE *archivo = abrir("DIAFINALES.DAT", "rb");
-    FILE *inscripcionesAnteriores = abrir("FINALES.DAT", "ab");
-    Inscripcion *inscripcion;
-    inscripcion = (Inscripcion *)malloc(sizeof(Inscripcion));
+
+    FILE *archivo = abrir("DIASFINALES.DAT", "rb");
+    FILE *archivoOrdenado;
+    Inscripcion inscripcion;
+    Registro reg;
+    int maxRegistros = LEGAJO_FINAL - LEGAJO_INICIAL;
+    cargarArchivo(archivoOrdenado, maxRegistros, "FINALES_ORDENADOS.DAT", "wb");
+    archivoOrdenado = abrir("FINALES_ORDENADOS.DAT", "wb+");
 
     fread(&inscripcion, sizeof(Inscripcion), 1, archivo);
     while (!feof(archivo))
     {
-        fwrite(&inscripcion, sizeof(Inscripcion), 1, inscripcionesAnteriores);
+        reg.legajo = inscripcion.legajo;
+        strcpy(reg.nombre, inscripcion.nombre);
+        strcpy(reg.apellido, inscripcion.apellido);
+        fseek(archivoOrdenado,sizeof(Registro)* (inscripcion.legajo-LEGAJO_INICIAL), SEEK_SET);
+        fwrite(&reg, sizeof(Registro), 1, archivoOrdenado);
         fread(&inscripcion, sizeof(Inscripcion), 1, archivo);
     }
-
+    
     fclose(archivo);
-    fclose(inscripcionesAnteriores);
-
-    inscripcionesAnteriores = abrir("FINALES.DAT", "rb");
-
-    fread(&inscripcion, sizeof(Inscripcion), 1, inscripcionesAnteriores);
-    printf("Legajo      Nombre y Apellido       Fecha         Código de materia\n");
-    while (!feof(inscripcionesAnteriores))
-    {
-        printf(" %d            %s                %d/%d/%d              %d\n",
-               inscripcion->legajo, inscripcion->nombre, inscripcion->dia, inscripcion->mes, inscripcion->anio, inscripcion->codMateria);
-        fread(&inscripcion, sizeof(Inscripcion), 1, inscripcionesAnteriores);
-    }
-    fclose(inscripcionesAnteriores);
+    fclose(archivoOrdenado);
+    imprimirArchivoBin("FINALES_ORDENADOS.DAT", "rb");
     system("pause");
     return 0;
 }
@@ -64,41 +71,26 @@ FILE *abrir(const char *path, const char *mode)
     }
     return ptrArchivo;
 }
-
-FILE *burbujeoMejorado(FILE *inscriptos)
+void cargarArchivo(FILE *archivo, int maxRegistros, const char *path, const char *mode)
 {
-    FILE *ptrArchivo = abrir("ORDENADO_X_LEGAJO.DAT", "wb");
-    Inscripcion *inscripcion;
-    inscripcion = (Inscripcion *)malloc(sizeof(Inscripcion));
-    int i, j, aux;
-    i = 0;
-    bool ordenado = false;
-    fread(&inscripcion, sizeof(Inscripcion), 1, inscriptos);
-    while (!feof(inscriptos) && !ordenado)
+    archivo = abrir(path, mode);
+    Registro inscriptos;
+    fseek(archivo,sizeof(Registro)*(LEGAJO_FINAL-LEGAJO_INICIAL), SEEK_END);
+    fwrite(0, sizeof(Registro), 1, archivo);
+  
+    fclose(archivo);
+    return;
+}
+void imprimirArchivoBin(const char *path, const char *mode)
+{
+    FILE *archivo = abrir(path, mode);
+    Registro reg;
+    fread(&reg, sizeof(Registro), 1, archivo);
+    while (!feof(archivo))
     {
-        ordenado = true;
-        for (j = 0; j < arr.length - i - 1; j++)
-        {
-
-            if (arr[j].points < arr[j + 1].points)
-            {
-                aux = arr[j];
-                arr[j] = arr[j + 1];
-                arr[j + 1] = aux;
-                ordenado = false;
-            }
-            if (arr[j].points == arr[j + 1].points)
-            {
-                if (arr[j].df < arr[j + 1].df)
-                {
-                    aux = arr[j];
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = aux;
-                    ordenado = false;
-                }
-            }
-        }
-        i++;
+        printf("%d %s %s\n",reg.legajo,reg.nombre,reg.apellido);
+        fread(&reg, sizeof(Registro), 1, archivo);
     }
-    return ptrArchivo;
+    fclose(archivo);
+    return;
 }
