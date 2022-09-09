@@ -56,12 +56,14 @@ int main()
                 aux = inscriptosOrdenados[j];
                 inscriptosOrdenados[j] = inscriptosOrdenados[j + 1];
                 inscriptosOrdenados[j + 1] = aux;
-                ordenado = false;
-            }
+            ordenado = false;
         }
-        i++;
+        }
+       i++; 
+       fread(&inscripcion, sizeof(Inscripcion), 1, archivo);
+       printf("%d %s %s\n",inscripcion.legajo,inscripcion.nombre,inscripcion.apellido);
     }
-
+    
     for (int k = 0; k < cantRegistros; k++)
     {
         fwrite(&inscriptosOrdenados[k], sizeof(Inscripcion), 1, archivoOrdenadoXLegajo);
