@@ -32,7 +32,7 @@ struct ST_LOCAL
 {
     int idLibro;
     char autor[20];
-    char stock;
+    char *stock;
     char titulo[30];
     char editorial[20];
     char genero[10];
@@ -41,7 +41,7 @@ struct ST_LOCAL
 struct ST_DEPOSITO
 {
     int idLibro;
-    char stock;
+    char *stock;
 };
 
 FILE *abrir(const char *path, const char *mode);
@@ -56,33 +56,91 @@ int main()
     fread(&local, sizeof(ST_LOCAL), 1, stockLocal);
     fread(&deposito, sizeof(ST_DEPOSITO), 1, stockDeposito);
 
-    while (!feof(stockLocal))
+    while (!feof(stockLocal) && !feof(stockDeposito))
     {
-
-        int key = local.idLibro;
-        while (!feof(stockDeposito) && key == local.idLibro)
+        if (local.idLibro == deposito.idLibro)
         {
-            if (local.stock == '0' && deposito.stock == '0')
+            if (atoi(local.stock) == 0 && atoi(deposito.stock) == 0)
             {
                 printf("%d  Falta en local y en depósito\n", local.idLibro);
                 librosFaltantes++;
             }
-            else if (local.stock == '0')
+            else if (atoi(local.stock) == 0)
             {
                 printf("%d  Falta en local\n", local.idLibro);
                 librosFaltantes++;
             }
-            else if (deposito.stock == '0')
+            else if (atoi(deposito.stock) == 0)
+            {
+                printf("%d  Falta en depósito\n", deposito.idLibro);
+                librosFaltantes++;
+            }
+            fread(&local, sizeof(ST_LOCAL), 1, stockLocal);
+            fread(&deposito, sizeof(ST_DEPOSITO), 1, stockDeposito);
+        }
+        if (local.idLibro < deposito.idLibro)
+        {
+            if (atoi(local.stock) == 0 && atoi(deposito.stock) == 0)
+            {
+                printf("%d  Falta en local y en depósito\n", local.idLibro);
+                librosFaltantes++;
+            }
+            else if (atoi(local.stock) == 0)
+            {
+                printf("%d  Falta en local\n", local.idLibro);
+                librosFaltantes++;
+            }
+            else if (atoi(deposito.stock) == 0)
+            {
+                printf("%d  Falta en depósito\n", deposito.idLibro);
+                librosFaltantes++;
+            }
+            fread(&local, sizeof(ST_LOCAL), 1, stockLocal);
+        }
+        if (local.idLibro > deposito.idLibro)
+        {
+            if (atoi(local.stock) == 0 && atoi(deposito.stock) == 0)
+            {
+                printf("%d  Falta en local y en depósito\n", local.idLibro);
+                librosFaltantes++;
+            }
+            else if (atoi(local.stock) == 0)
+            {
+                printf("%d  Falta en local\n", local.idLibro);
+                librosFaltantes++;
+            }
+            else if (atoi(deposito.stock) == 0)
             {
                 printf("%d  Falta en depósito\n", deposito.idLibro);
                 librosFaltantes++;
             }
             fread(&deposito, sizeof(ST_DEPOSITO), 1, stockDeposito);
         }
+    }
+    while (!feof(stockLocal))
+    {
+
+        if (atoi(local.stock) == 0)
+        {
+            printf("%d  Falta en local\n", local.idLibro);
+            librosFaltantes++;
+        }
 
         fread(&local, sizeof(ST_LOCAL), 1, stockLocal);
     }
-    printf("Total de libros en falta: %d",librosFaltantes);
+    while (!feof(stockDeposito))
+    {
+        if(atoi(deposito.stock) == 0)
+        {
+            printf("%d  Falta en depósito\n", deposito.idLibro);
+            librosFaltantes++;
+        }
+        fread(&deposito, sizeof(ST_DEPOSITO), 1, stockDeposito);
+    }
+    
+    printf("Total de libros en falta: %d", librosFaltantes);
+    fclose(stockLocal);
+    fclose(stockDeposito);
     system("pause");
     return 0;
 }

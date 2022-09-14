@@ -12,14 +12,14 @@ registro por cada juego que se encuentra en el local, con el siguiente diseño:
 */
 #include <iostream>
 #include "string.h"
-#include <stdlib.h> 
+#include <stdlib.h>
 #define MAX_CHARS 25
 using namespace std;
 
 struct ST_CONSOLA
 {
-   char nombre[20];
-   int cantJuegos;
+    char nombre[20];
+    int cantJuegos;
 };
 
 struct ST_JUEGO
@@ -35,27 +35,28 @@ FILE *abrir(const char *path, const char *mode);
 int main()
 {
     FILE *consolaFile = abrir("JuegosPorConsola.dat", "wb");
-    FILE *juegosFile = abrir("Juegos.dat","rb");
+    FILE *juegosFile = abrir("Juegos.dat", "rb");
     ST_CONSOLA consola;
     ST_JUEGO juego;
-    
-    fread(&juego,sizeof(ST_JUEGO),1,juegosFile);
+
+    fread(&juego, sizeof(ST_JUEGO), 1, juegosFile);
     while (!feof(juegosFile))
     {
-        strcpy(consola.nombre,juego.consola);
-        while (!feof(juegosFile) && strcmp(consola.nombre,juego.consola) == 0)
+        strcpy(consola.nombre, juego.consola);
+        while (!feof(juegosFile) && strcmp(consola.nombre, juego.consola) == 0)
         {
-           int stock = atoi(juego.stock);
-           if (stock > 0)
-           {
-              consola.cantJuegos =+ stock;
-           }   
-           fread(&juego,sizeof(ST_JUEGO),1,juegosFile);
+            int stock = atoi(juego.stock);
+            if (stock > 0)
+            {
+                consola.cantJuegos = +stock;
+            }
+            fread(&juego, sizeof(ST_JUEGO), 1, juegosFile);
         }
-        fwrite(&consola,sizeof(ST_CONSOLA),1,consolaFile);
+        fwrite(&consola, sizeof(ST_CONSOLA), 1, consolaFile);
     }
-    
 
+    fclose(consolaFile);
+    fclose(juegosFile);
     system("pause");
     return 0;
 }

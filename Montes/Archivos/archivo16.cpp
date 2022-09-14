@@ -88,6 +88,7 @@ int main()
     }
     printf(".....................................................................................\n");
     printf("Total General de series: %d\n",totalSeries);
+    fclose(episodiosFile);
     system("pause");
     return 0;
 }
