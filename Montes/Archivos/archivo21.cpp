@@ -49,6 +49,7 @@ struct ST_COMPRADOR
 FILE *abrir(const char *path, const char *mode);
 void cargarVuelosSemanales(ST_VUELO vuelo[MAX_VUELOS],const char *path, const char *mode);
 void ordenarXIdVuelo(ST_VUELO vuelo[], int cantVuelos);
+void imprimirListado(ST_VUELO vuelo[], int maxVuelos, int pasajesDisponibles[], int pasajesNoVendidos[]);
 int main()
 {
     
@@ -56,8 +57,9 @@ int main()
     FILE *compradoresFile = abrir("Compradores.dat","rb");
     ST_VUELO vuelo[MAX_VUELOS];
     ST_COMPRADOR comprador;
-    int pasajesDisponibles[MAX_VUELOS];
-    int pasajesNoVendidos[MAX_VUELOS];
+    int pasajesDisponibles[MAX_VUELOS] = {0};
+    int pasajesNoVendidos[MAX_VUELOS] = {0};
+    
     cargarVuelosSemanales(vuelo,"Vuelos.dat","rb");
     ordenarXIdVuelo(vuelo,MAX_VUELOS);
     fread(&comprador,sizeof(ST_COMPRADOR),1,compradoresFile);
@@ -65,20 +67,27 @@ int main()
     {
         for (int i = 0; i < MAX_VUELOS; i++)
         {
+            bool vendido = false;
             if (strcmp(vuelo[i].idVuelo,comprador.idVuelo) == 0)
             {
                 if (comprador.pasajes < vuelo[i].pasajes)
                 {
                     vuelo[i].pasajes =- comprador.pasajes;
-                }
-                
-            }
-            
-        }
-        
-        
+                    pasajesDisponibles[i] = vuelo[i].pasajes;
+                    vendido = true;
+                }else{
+                    pasajesNoVendidos[i]++;
+                }                                                                                             
+            } 
+            if (vendido)
+            {
+                printf("%d  %s  %d  %s",comprador.dni,comprador.apellidoNombre,comprador.pasajes,comprador.idVuelo);
+            }                       
+        }       
     }
-    
+    imprimirListado(vuelo,MAX_VUELOS,pasajesDisponibles,pasajesNoVendidos);
+    fclose(vuelosFile);
+    fclose(compradoresFile);    
     system("pause");
     return 0;
 }
@@ -129,4 +138,13 @@ void ordenarXIdVuelo(ST_VUELO vuelo[], int cantVuelos)
     }
     return;
 }
-
+void imprimirListado(ST_VUELO vuelo[], int maxVuelos, int pasajesDisponibles[], int pasajesNoVendidos[]){
+    
+    printf("Código de Vuelo   Pasajes disponibles    Pasajes no vendidos\n");
+    for (int i = 0; i < maxVuelos; i++)
+    {
+        printf("   %s                %d                         %d\n",vuelo[i].idVuelo,pasajesDisponibles[i],pasajesNoVendidos[i]);
+    }
+    
+    return;
+}

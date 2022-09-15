@@ -46,10 +46,8 @@ int main()
         while (!feof(juegosFile) && strcmp(consola.nombre, juego.consola) == 0)
         {
             int stock = atoi(juego.stock);
-            if (stock > 0)
-            {
-                consola.cantJuegos = +stock;
-            }
+            consola.cantJuegos = +stock;
+
             fread(&juego, sizeof(ST_JUEGO), 1, juegosFile);
         }
         fwrite(&consola, sizeof(ST_CONSOLA), 1, consolaFile);
