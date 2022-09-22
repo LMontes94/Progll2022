@@ -81,7 +81,9 @@ int main()
                     ventaFinal = sumoIva(ventaFinal);
                 }
                 printf("Precio final de la venta: %0.2f$", ventaFinal);
-            }else{
+            }
+            else
+            {
                 printf("No se realizo la venta!!")
             }
             break;
@@ -201,21 +203,32 @@ float sumoIva(float ventaFinal)
 {
     return precioVenta + ((precioVenta * 21) / 100);
 }
-void imprimirListado(ST_VENTAS ventas[][MAX_TALLES]){
-    
-    int i = 0,j;
+void imprimirListado(ST_VENTAS ventas[][MAX_TALLES])
+{
+
+    int i = 0, j;
     int keyId;
-    printf("Talle    Unidades Vendidas");
-   while(i < MAX_ARTICULOS){
-    j=0;
-     keyId = ventas[i][j].id;
-     while (j < MAX_TALLES && keyId == ventas[i][j].id)
-     {
-        printf("  %d        %d",ventas[i][j].talle,ventas[i][j].unidad;
-        j++;
-     }
-     i++;
-   }
-    
+    int cantVendidas, int generalVendidas;
+    while (i < MAX_ARTICULOS)
+    {
+        cantVendidas = 0;
+        j = 0;
+        generalVendidas = 0;
+        keyId = ventas[i][j].id;
+        printf("Codigo de articulo: %d\n", ventas[i][j].id);
+        printf("Talle    Unidades Vendidas\n");
+        while (j < MAX_TALLES && keyId == ventas[i][j].id)
+        {
+            printf("  %d        %d", ventas[i][j].talle, ventas[i][j].unidad);
+            cantVendidas = +ventas[i][j].unidad;
+            j++;
+        }
+        printf("--------------------------------------------\n");
+        printf("Total unidades vendidas artículo: %d", cantVendidas);
+        i++;
+        generalVendidas = +cantVendidas;
+    }
+    printf("--------------------------------------------\n");
+    printf("Total general de unidades vendidas: %d", cantVendidas);
     return
 }
