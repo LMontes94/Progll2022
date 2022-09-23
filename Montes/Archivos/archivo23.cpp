@@ -44,11 +44,11 @@ struct ST_VENTAS
 
 FILE *abrir(const char *path, const char *mode);
 void menu(int &opcion);
-cargarVenta(ST_VENTAS ventas[MAX_ARTICULOS][MAX_TALLES], bool &vendio);
+void cargarVenta(ST_VENTAS ventas[MAX_ARTICULOS][MAX_TALLES], bool &vendio);
 void cargarArticulos(ST_ARTICULO articulo[MAX_ARTICULOS][MAX_TALLES], const char *path, const char *mode);
-int contarUnidadesVendidas(ST_VENTAS venta[][MAX_PATH]);
-float sumarPrecios(ST_VENTAS venta[][MAX_PATH], ST_ARTICULO articulo[MAX_ARTICULOS][MAX_TALLES]);
-float aplicarDescuento(ST_VENTAS venta[][MAX_PATH], ST_ARTICULO articulo[MAX_ARTICULOS][MAX_TALLES]);
+int contarUnidadesVendidas(ST_VENTAS venta[][MAX_TALLES]);
+float sumarPrecios(ST_VENTAS venta[][MAX_TALLES], ST_ARTICULO articulo[MAX_ARTICULOS][MAX_TALLES]);
+float aplicarDescuento(ST_VENTAS venta[][MAX_TALLES], ST_ARTICULO articulo[MAX_ARTICULOS][MAX_TALLES]);
 float sumoIva(float ventaFinal);
 void imprimirListado(ST_VENTAS ventas[][MAX_TALLES]);
 int main()
@@ -84,7 +84,7 @@ int main()
             }
             else
             {
-                printf("No se realizo la venta!!")
+                printf("No se realizo la venta!!");
             }
             break;
         case 2:
@@ -187,7 +187,8 @@ float aplicarDescuento(ST_VENTAS venta[][MAX_PATH], ST_ARTICULO articulo[MAX_ART
 }
 float sumarPrecios(ST_VENTAS venta[][MAX_PATH], ST_ARTICULO articulo[MAX_ARTICULOS][MAX_TALLES])
 {
-    float precioVenta for (int i = 0; i < MAX_ARTICULOS; i++)
+    float precioVenta;
+    for (int i = 0; i < MAX_ARTICULOS; i++)
     {
         for (int j = 0; j < MAX_TALLES; j++)
         {
@@ -201,14 +202,15 @@ float sumarPrecios(ST_VENTAS venta[][MAX_PATH], ST_ARTICULO articulo[MAX_ARTICUL
 }
 float sumoIva(float ventaFinal)
 {
-    return precioVenta + ((precioVenta * 21) / 100);
+    return ventaFinal + ((ventaFinal * 21) / 100);
 }
 void imprimirListado(ST_VENTAS ventas[][MAX_TALLES])
 {
 
     int i = 0, j;
     int keyId;
-    int cantVendidas, int generalVendidas;
+    int cantVendidas;
+    int generalVendidas;
     while (i < MAX_ARTICULOS)
     {
         cantVendidas = 0;
@@ -230,5 +232,5 @@ void imprimirListado(ST_VENTAS ventas[][MAX_TALLES])
     }
     printf("--------------------------------------------\n");
     printf("Total general de unidades vendidas: %d", cantVendidas);
-    return
+    return;
 }
