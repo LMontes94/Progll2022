@@ -37,18 +37,19 @@ b) grabe un archivo binario de totales, ordenado por cantidad de alumnos, con el
 b.1 Nombre de provincia (20 caracteres)
 b.2 Cantidad de alumnos (long)
 NOTA: Utilice el siguiente juego de datos para el seguimiento del algoritmo:
-
-Provincia Ciudad N° de escuela Cantidad de Alumnos
-BSAS LA PLATA 10 500
-BSAS LA PLATA 15 800
-BSAS MERCEDES 8 600
-SAN LUIS MERCEDES 3 400
+ 
+Provincia   Ciudad      N° de escuela   Cantidad de Alumnos
+BSAS       LA PLATA         10                 500
+BSAS       LA PLATA         15                 800
+BSAS       MERCEDES         8                  600
+SAN LUIS   MERCEDES         3                  400
 */
 #include <iostream>
 #include "string.h"
 #include <stdlib.h>
 
 #define MAX_CHARS 20
+#define MAX_PROVINCIAS 23
 using namespace std;
 
 struct ST_REGISTRO
@@ -66,17 +67,19 @@ struct ST_AUX
 };
 
 FILE *abrir(const char *path, const char *mode);
+void  ordenarMayorCantidadAlumnos(ST_AUX aux[],int maxProvincias);
 int main()
 {
 
     FILE *escuelasFile = abrir("DATOSESCUELAS.DAT", "rb");
     FILE *totalAlumnosFile = abrir("TotalAlumnosXprovincia.dat", "wb");
     ST_REGISTRO registro;
-    ST_AUX aux;
+    ST_AUX aux[MAX_PROVINCIAS];
     char provincia[MAX_CHARS];
     char ciudad[MAX_CHARS];
     int totalEscuelasPais = 0;
     int totalAlumnosPais = 0;
+    int i = 0;
     printf("****************** Listado de Escuelas *********************\n");
     fread(&registro, sizeof(ST_REGISTRO), 1, escuelasFile);
     while (!feof(escuelasFile))
@@ -84,7 +87,7 @@ int main()
         printf("Provincia de %s\n", registro.provincia);
         strcpy(provincia, registro.provincia);
         int totalEscuelasProvincia = 0;
-        aux.alumnos = 0;
+        aux[i].alumnos = 0;
         while (!feof(escuelasFile) && strcmp(provincia, registro.provincia) == 0)
         {
             printf("Ciudad\n");
@@ -102,16 +105,22 @@ int main()
             }
             printf("Total Escuelas Ciudad %d -- Total alumnos %d\n",totalEscuelasCiudad,totalAlumnosCiudad);
             totalEscuelasProvincia =+ totalEscuelasCiudad;
-            aux.alumnos =+ totalAlumnosCiudad;
+            aux[i].alumnos =+ totalAlumnosCiudad;
         }
-        printf("Total Escuelas Provincia %d -- Total alumnos %d\n",totalEscuelasProvincia,aux.alumnos);
-        strcpy(aux.provincia, provincia);
-        fwrite(&aux, sizeof(ST_AUX), 1, totalAlumnosFile);
+        printf("Total Escuelas Provincia %d -- Total alumnos %d\n",totalEscuelasProvincia,aux[i].alumnos);
+        strcpy(aux[i].provincia, provincia);
+        //fwrite(&aux, sizeof(ST_AUX), 1, totalAlumnosFile);
         totalEscuelasPais =+ totalEscuelasProvincia;
-        totalAlumnosPais =+ aux.alumnos;
+        totalAlumnosPais =+ aux[i].alumnos;
     }
     printf("Total Escuelas País %d -- Total alumnos %d\n",totalEscuelasPais,totalAlumnosPais);
+    ordenarMayorCantidadAlumnos(aux,MAX_PROVINCIAS);
 
+    for (int j = 0; j < MAX_PROVINCIAS; j++)
+    {
+        fwrite(&aux[j],sizeof(ST_AUX),1,totalAlumnosFile);
+    }
+    
     fclose(escuelasFile);
     system("pause");
     return 0;
