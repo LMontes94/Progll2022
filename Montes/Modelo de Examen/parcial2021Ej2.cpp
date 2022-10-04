@@ -53,7 +53,6 @@ bool validaTelefono(const char *cad)
 
         if (strchr(buffer, '-') != NULL && strchr(buffer, '-') > strchr(buffer, '+'))
         {
-           
             strtok(buffer, "+");
             strcpy(codPais, strtok(buffer, "-"));
             strcpy(codArea, strtok(NULL, "-"));
