@@ -12,50 +12,52 @@ después del apareo).
 
 using namespace std;
 
-
 typedef struct Alumno
 {
-    char apNom[35+1];
+    char apNom[35 + 1];
     int legajo;
     int division;
 
-}STR_DATO,STR_ALUMNO;
+} STR_DATO, STR_ALUMNO;
 
 typedef struct Nodo
 {
     STR_DATO dato;
     Nodo *siguiente;
 
-}STR_NODO;
+} STR_NODO;
 
-
-
-void create(STR_NODO **lista) {
+void create(STR_NODO **lista)
+{
     *lista = NULL;
     return;
 }
 
-bool isEmpty(STR_NODO *lista) {
+bool isEmpty(STR_NODO *lista)
+{
     return lista == NULL;
 }
 
-
-
-STR_NODO* insertOrdered(STR_DATO valor, STR_NODO **lista) {
-    STR_NODO* nodo = (STR_NODO*) malloc(sizeof(STR_NODO));
+STR_NODO *insertOrdered(STR_DATO valor, STR_NODO **lista)
+{
+    STR_NODO *nodo = (STR_NODO *)malloc(sizeof(STR_NODO));
     nodo->dato = valor;
     nodo->siguiente = NULL;
 
     STR_NODO *listaAux = *lista;
     STR_NODO *nodoAnt = NULL;
-    while(listaAux != NULL && listaAux->dato.legajo < valor.legajo) {
+    while (listaAux != NULL && listaAux->dato.legajo < valor.legajo)
+    {
         nodoAnt = listaAux;
         listaAux = listaAux->siguiente;
     }
 
-    if(nodoAnt == NULL) {
+    if (nodoAnt == NULL)
+    {
         *lista = nodo;
-    } else {
+    }
+    else
+    {
         nodoAnt->siguiente = nodo;
     }
 
@@ -63,9 +65,11 @@ STR_NODO* insertOrdered(STR_DATO valor, STR_NODO **lista) {
     return nodo;
 }
 
-int count(STR_NODO *listaAux) {
+int count(STR_NODO *listaAux)
+{
     int cant = 0;
-    while(listaAux != NULL) {
+    while (listaAux != NULL)
+    {
         listaAux = listaAux->siguiente;
         cant++;
     }
@@ -73,50 +77,48 @@ int count(STR_NODO *listaAux) {
     return cant;
 }
 
-void clearList(STR_NODO **lista) {
+void clearList(STR_NODO **lista)
+{
     STR_NODO *aux = NULL;
-    while(*lista != NULL) {
+    while (*lista != NULL)
+    {
         aux = *lista;
         *lista = (*lista)->siguiente;
         free(aux);
     }
 }
 
-
-STR_NODO* apareo(STR_NODO *listaA, STR_NODO *listaB) {
-    STR_NODO * listaC;
+STR_NODO *apareo(STR_NODO *listaA, STR_NODO *listaB)
+{
+    STR_NODO *listaC;
     create(&listaC);
-    while(listaB != NULL) {
+    while (listaB != NULL)
+    {
         insertOrdered(listaB->dato, &listaA);
         listaB = listaB->siguiente;
     }
 
-   listaC=listaA;
-   listaA=NULL;
-   listaB=NULL;
-   
+    listaC = listaA;
+    listaA = NULL;
+    listaB = NULL;
+
     return listaC;
 }
 
-
-void print(STR_NODO *lista) {
+void print(STR_NODO *lista)
+{
     STR_NODO *listaAux;
     listaAux = lista;
-    while(listaAux != NULL) {     
-       printf("LISTA C \n");
+    while (listaAux != NULL)
+    {
+        printf("LISTA C \n");
         while (listaAux != NULL)
         {
-        printf("-%d -%d -%s \n",listaAux->dato.legajo,listaAux->dato.division,listaAux->dato.apNom);
-        listaAux = listaAux->siguiente;
-        
+            printf("-%d -%d -%s \n", listaAux->dato.legajo, listaAux->dato.division, listaAux->dato.apNom);
+            listaAux = listaAux->siguiente;
         }
-        
     }
 }
-
-
-
-
 
 /*
 STR_NODO* insertInFront(int valor, STR_NODO **lista) {
@@ -155,37 +157,19 @@ void sort(STR_NODO **lista) {
 int main()
 {
 
+    STR_NODO *lista = NULL;
+    create(&lista);
+    STR_NODO *listaB = NULL;
+    create(&listaB);
+    STR_NODO *listaC = NULL;
+    create(&listaC);
 
-STR_NODO *lista=NULL;
-create(&lista);
-STR_NODO *listaB=NULL;
-create(&listaB);
-STR_NODO *listaC=NULL;
-create(&listaC);
+    STR_ALUMNO alum;
 
-STR_ALUMNO alum;
-
-printf("Complete la Lista A \n");
-printf("Ingrese un Apellido (Fin para terminar):");
-scanf("%s", &alum.apNom);
- while (strcmp(alum.apNom, "Fin") != 0)
-    {
-        printf("Ingrese una division:");
-        scanf("%d", &alum.division);
-
-        printf("Ingrese una legajo:");
-        scanf("%d", &alum.legajo);
-        
-        insertOrdered(alum,&lista);
-
-       printf("Ingrese un Apellido (Fin para terminar):");
-       scanf("%s", &alum.apNom);
-    }
-
-printf("Complete la Lista B \n");
-printf("Ingrese un Apellido (Fin para terminar):");
-scanf("%s", &alum.apNom);
- while (strcmp(alum.apNom, "Fin") != 0)
+    printf("Complete la Lista A \n");
+    printf("Ingrese un Apellido (Fin para terminar):");
+    scanf("%s", &alum.apNom);
+    while (strcmp(alum.apNom, "Fin") != 0)
     {
         printf("Ingrese una division:");
         scanf("%d", &alum.division);
@@ -193,20 +177,32 @@ scanf("%s", &alum.apNom);
         printf("Ingrese una legajo:");
         scanf("%d", &alum.legajo);
 
-        insertOrdered(alum,&listaB);
-        
+        insertOrdered(alum, &lista);
 
-       printf("Ingrese un Apellido (Fin para terminar):");
-       scanf("%s", &alum.apNom);
+        printf("Ingrese un Apellido (Fin para terminar):");
+        scanf("%s", &alum.apNom);
     }
 
+    printf("Complete la Lista B \n");
+    printf("Ingrese un Apellido (Fin para terminar):");
+    scanf("%s", &alum.apNom);
+    while (strcmp(alum.apNom, "Fin") != 0)
+    {
+        printf("Ingrese una division:");
+        scanf("%d", &alum.division);
 
+        printf("Ingrese una legajo:");
+        scanf("%d", &alum.legajo);
 
+        insertOrdered(alum, &listaB);
 
-listaC=apareo(lista,listaB);
-print(listaC);
-clearList(&lista);
+        printf("Ingrese un Apellido (Fin para terminar):");
+        scanf("%s", &alum.apNom);
+    }
 
+    listaC = apareo(lista, listaB);
+    print(listaC);
+    clearList(&lista);
 
     system("pause");
     return 0;
