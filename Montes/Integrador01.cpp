@@ -104,10 +104,10 @@ ST_NODO *search(ST_NODO *lista, ST_DATO valor) {
     }
     return listaAux;
 }
-void sort(STR_NODO **lista) {
-    STR_NODO *listaAux;
-    create(&listaAux);
-    STR_DATO dato;
+void sort(ST_NODO **lista) {
+    ST_NODO *listaAux;
+    listaAux = NULL;
+    ST_DATO dato;
     while(*lista != NULL) {
         dato = deleteFirst(lista);
         insertOrdered(dato, &listaAux);
@@ -120,8 +120,8 @@ void clearList(ST_NODO **lista) {
     while(*lista != NULL) {
         aux = *lista;
         *lista = (*lista)->ste;
-        free(aux);
     }
+    free(aux);
 }
 
 ST_DATO deleteFirst(ST_NODO **lista) {
@@ -132,17 +132,50 @@ ST_DATO deleteFirst(ST_NODO **lista) {
     return dato;
 }
 void print(ST_NODO *listaAux) {
+    printf("Legajo    Hs. Trabajadas  Hs. Ausencia    Ausentismo\n");
     while(listaAux != NULL) {
-        printf("Legajo: %d - Posicion: %d\n", listaAux->dato.legajo, listaAux->dato.hsA);
+        printf("  %s       %d             %s               %0.2f\n");
         listaAux = listaAux->ste;
     }
+}
+char *mayorLegajoConAusentismo(ST_NODO **lista){
+   
+   ST_NODO *listAux = *lista;
+   char *mayor = (char*)malloc(10*sizeof(char));
+   
+   while (listAux != NULL)
+   {
+     if (strcmp(listAux->dato.legajo,mayor) > 0)
+     {
+        strcpy(mayor,listAux->dato.legajo);
+     }
+     
+     listAux = listAux->ste;
+   }
+   return mayor;
+}
+int buscarDiaConMaoyrAusencia(int mayorDiaAusencias[],int dias){
+    
+    int max = 0;
+    int pos = 0;
+    for (int i = 0; i < dias; i++)
+    {
+       if (mayorDiaAusencias[i] > max)
+       {
+          max = mayorDiaAusencias[i];
+          pos = i;
+       }
+       
+    }
+    return pos;
 }
 int main(){
     
     FILE *horasDiariasFile = abrir("HORAS_DIARIAS.dat","rb");
     ST_EMPLEADO empleado;
     ST_NODO *lista = NULL;
-
+    int mayorDiaAusencias[31];
+    char *mayor = (char*)malloc(10*sizeof(char));
     fread(&empleado,sizeof(ST_EMPLEADO),1,horasDiariasFile);
     while (!feof(horasDiariasFile))
     {
@@ -154,11 +187,16 @@ int main(){
         }else{
             dato.hsT =+ empleado.hora;
         }
-        insertWithoutDuplicate(dato,&lista);   
+        insertWithoutDuplicate(dato,&lista);  
+        mayorDiaAusencias[empleado.dia-1]++; 
         fread(&empleado,sizeof(ST_EMPLEADO),1,horasDiariasFile);
     }
     
-
+    mayor = mayorLegajoConAusentismo(&lista);
+    int pos = buscarDiaConMaoyrAusencia(mayorDiaAusencias,31);
+    print(lista);
+    printf("El día del mes con mayor cantidad de Horas de Ausencia: %d", mayorDiaAusencias[pos]);
+    printf("El legajo con mayor Ausentismo: %s",mayor);
     system("pause");
     return 0;
 }
