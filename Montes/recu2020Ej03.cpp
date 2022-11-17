@@ -37,6 +37,9 @@ Restricciones:
 
 using namespace std;
 #define MAX_BUFFER 250
+#define CUATRIMESTRAL 100
+#define ANUAL 110
+
 struct ST_MATERIA
 {
     char codigo[6];
@@ -60,9 +63,10 @@ struct ST_NODO
     ST_NODO *ste;
 };
 
-struct ST_NODO_INSCRIPCION{
-   ST_INSCRIPCION dato;
-   ST_NODO_INSCRIPCION *ste;
+struct ST_NODO_INSCRIPCION
+{
+    ST_INSCRIPCION dato;
+    ST_NODO_INSCRIPCION *ste;
 };
 
 FILE *abrir(const char *path, const char *mode)
@@ -113,15 +117,15 @@ ST_NODO *search(ST_NODO *lista, ST_INSCRIPCION valor)
     return listaAux;
 }
 
-ST_NODO_INSCRIPCION *insertOrderedInscriptos(ST_INSCRIPCION valor, ST_NODO_INSCRIPCION  **lista)
+ST_NODO_INSCRIPCION *insertOrderedInscriptos(ST_INSCRIPCION valor, ST_NODO_INSCRIPCION **lista)
 {
-    ST_NODO_INSCRIPCION  *nodo = (ST_NODO_INSCRIPCION  *)malloc(sizeof(ST_NODO_INSCRIPCION ));
+    ST_NODO_INSCRIPCION *nodo = (ST_NODO_INSCRIPCION *)malloc(sizeof(ST_NODO_INSCRIPCION));
     nodo->dato = valor;
     nodo->ste = NULL;
 
-    ST_NODO_INSCRIPCION  *listaAux = *lista;
-    ST_NODO_INSCRIPCION  *nodoAnt = NULL;
-    while (listaAux != NULL && strcmp(listaAux->dato.codigo, valor.codigo) < 0 && strcmp(listaAux->dato.apellido,valor.apellido) < 0)
+    ST_NODO_INSCRIPCION *listaAux = *lista;
+    ST_NODO_INSCRIPCION *nodoAnt = NULL;
+    while (listaAux != NULL && strcmp(listaAux->dato.codigo, valor.codigo) < 0 && strcmp(listaAux->dato.apellido, valor.apellido) < 0)
     {
         nodoAnt = listaAux;
         listaAux = listaAux->ste;
@@ -140,11 +144,17 @@ ST_NODO_INSCRIPCION *insertOrderedInscriptos(ST_INSCRIPCION valor, ST_NODO_INSCR
     return nodo;
 }
 
-int count(ST_NODO_INSCRIPCION *listaAux) {
+int count(ST_NODO_INSCRIPCION *listaAux, char codigo[])
+{
     int cant = 0;
-    while(listaAux != NULL) {
+    while (listaAux != NULL)
+    {
+        if (strcmp(listaAux->dato.codigo,codigo) == 0)
+        {
+          cant++;  
+        }        
         listaAux = listaAux->ste;
-        cant++;
+        
     }
 
     return cant;
@@ -152,12 +162,14 @@ int count(ST_NODO_INSCRIPCION *listaAux) {
 
 void menu(int &opcion);
 void leer(ST_INSCRIPCION *inscripcion, FILE *file);
+void printInscriptos(ST_NODO_INSCRIPCION *lista);
+void printInscriptosXMateria(ST_NODO_INSCRIPCION *lista, char codigo[]);
 int main()
 {
 
     FILE *materiasBin = abrir("materias.dat", "rb");
     FILE *inscripcionesTxt = abrir("inscripciones.txt", "r");
-    FILE * rechazadasTxt = abrir("rechazadas.txt","w");
+    FILE *rechazadasTxt = abrir("rechazadas.txt", "w");
 
     ST_MATERIA materia;
     ST_INSCRIPCION inscripcion;
@@ -169,7 +181,7 @@ int main()
         if (materia.modalidad == 'A')
         {
             (materia.capacidad * 10) / 100;
-        }        
+        }
         insertOrdered(materia, &listaMaterias);
         fread(&materia, sizeof(ST_MATERIA), 1, materiasBin);
     }
@@ -180,10 +192,12 @@ int main()
         ST_NODO *listaAux = search(listaMaterias, inscripcion);
         if (listaAux->dato.capacidad > 0)
         {
-            insertOrderedInscriptos(inscripcion,&listaInscriptos);
+            insertOrderedInscriptos(inscripcion, &listaInscriptos);
             listaAux->dato.capacidad--;
-        }else{
-            fprintf(rechazadasTxt,"%s %d %s %s",inscripcion.codigo,inscripcion.dni,inscripcion.apellido,inscripcion.nombre);
+        }
+        else
+        {
+            fprintf(rechazadasTxt, "%s %d %s %s", inscripcion.codigo, inscripcion.dni, inscripcion.apellido, inscripcion.nombre);
         }
         leer(&inscripcion, inscripcionesTxt);
     }
@@ -195,11 +209,11 @@ int main()
         {
         case 1:
         {
-
+            printInscriptos(listaInscriptos);
             break;
         }
         case 2:
-            /* code */
+            printInscriptosXMateria(listaInscriptos,listaMaterias->dato.codigo);
             break;
         case 3:
             printf("Cerrando app..... NV!!\n");
@@ -217,9 +231,9 @@ int main()
 void menu(int &opcion)
 {
     printf("------Menu---------\n");
-    printf("2- Imprimir listado de e inscriptos\n");
-    printf("3- Imprimir listado de materias con los inscriptos aceptados\n");
-    printf("4- Salir\n");
+    printf("1- Imprimir listado de inscriptos\n");
+    printf("2- Imprimir listado de materias con los inscriptos aceptados\n");
+    printf("3- Salir\n");
     printf("Seleccione una opcion..\n");
     scanf("%d", &opcion);
     return;
@@ -235,5 +249,24 @@ void leer(ST_INSCRIPCION *inscripcion, FILE *file)
         strcpy(inscripcion->apellido, strtok(NULL, " "));
         strcpy(inscripcion->nombre, strtok(NULL, " \n"));
     }
+    return;
+}
+
+void printInscriptos(ST_NODO_INSCRIPCION *lista)
+{
+    ST_NODO_INSCRIPCION *listaAux = lista;
+
+    while (listaAux != NULL)
+    {
+        char key[6];
+        strcpy(key, listaAux->dato.codigo);
+        printf("Materia: %s     Total Materia: \n", key);
+        while (listaAux != NULL && strcmp(key, listaAux->dato.codigo) == 0)
+        {
+            printf("%s  %s  %d\n", listaAux->dato.apellido, listaAux->dato.nombre, listaAux->dato.dni);
+            listaAux = listaAux->ste;
+        }
+    }
+
     return;
 }

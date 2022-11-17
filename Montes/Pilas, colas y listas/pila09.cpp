@@ -58,6 +58,7 @@ void vaciarAux(STR_NODO **pilaOrdenada, STR_NODO **pilaAux){
    }
    return;
 }
+
 void situar(int dato, STR_NODO **pilaOrdenada, STR_NODO **pilaAux){
    int num = 0;
    if(isEmpty(*pilaOrdenada)){
